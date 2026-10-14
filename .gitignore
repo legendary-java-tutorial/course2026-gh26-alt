@@ -7,3 +7,6 @@ node_modules/
 # Служебные файлы систем
 .DS_Store
 Thumbs.db
+
+# Настройки IDE
+.idea/
