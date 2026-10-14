@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Угадай число</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 32rem; margin: 3rem auto; padding: 0 1rem; text-align: center; }
+    button { margin: 0.25rem; padding: 0.5rem 1rem; font-size: 1rem; }
+    input { width: 6rem; font-size: 1.25rem; text-align: center; }
+    #answer { font-size: 1.5rem; min-height: 2rem; }
+    #theme { color: #666; }
+  </style>
+</head>
+<body>
+  <h1 id="greeting">Угадай число</h1>
+  <p id="theme"></p>
+  <div id="choose" hidden>Выберите режим: <span id="modes"></span></div>
+  <p id="range"></p>
+  <form id="play" hidden>
+    <input id="guess" type="text" inputmode="numeric" autocomplete="off">
+    <button type="submit">Проверить</button>
+  </form>
+  <p id="answer"></p>
+  <script type="module" src="./web.js"></script>
+</body>
+</html>

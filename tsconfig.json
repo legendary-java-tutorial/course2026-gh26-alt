@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "lib": ["es2023", "dom"],
+    "rootDir": "src",
+    "outDir": "docs",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

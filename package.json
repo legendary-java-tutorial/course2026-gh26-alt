@@ -1,0 +1,16 @@
+{
+  "name": "guess-number",
+  "version": "1.0.0",
+  "description": "Игра «Угадай число» в терминале и в браузере",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node docs/cli.js",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "^7.0.2"
+  }
+}

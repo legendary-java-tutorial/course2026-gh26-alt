@@ -1,0 +1,9 @@
+# Пакеты: ставит npm install, в историю не идут
+node_modules/
+
+# Журнал Claude Code учебного профиля — не в историю
+.javarush/
+
+# Служебные файлы систем
+.DS_Store
+Thumbs.db
