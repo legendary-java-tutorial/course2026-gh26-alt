@@ -1,6 +1,6 @@
 {
   "theme": "Океан",
-  "greeting": "Ну что, сыграем? Режимы: classic, quick",
+  "greeting": "Выбери режим: classic или quick",
   "modes": {
     "quick": {
       "min": 1,
