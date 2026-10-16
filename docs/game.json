@@ -1,7 +1,14 @@
 {
   "theme": "Океан",
-  "greeting": "Ну что, сыграем?",
+  "greeting": "Ну что, сыграем? Режимы: classic, quick",
   "modes": {
+    "quick": {
+      "min": 1,
+      "max": 10,
+      "higher": "больше",
+      "lower": "меньше",
+      "win": "молния!"
+    },
     "classic": {
       "min": 1,
       "max": 100,
