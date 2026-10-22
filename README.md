@@ -17,6 +17,10 @@ npm test
 
 `npm install` — один раз, `npm start` — собрать и сыграть, `npm test` — проверить тексты и логику. Выход из игры — Ctrl+C, после выхода игра пишет «До встречи!».
 
+## Как играть в браузере
+
+Откройте [legendary-java-tutorial.github.io/course2026-gh26-guess-number](https://legendary-java-tutorial.github.io/course2026-gh26-guess-number/), выберите режим кнопкой, вводите число и жмите «Проверить».
+
 ![Партия в терминале](images/screenshot.png)
 
 ## Режимы
