@@ -15,7 +15,7 @@ npm start
 npm test
 ```
 
-`npm install` — один раз, `npm start` — собрать и сыграть, `npm test` — проверить тексты и логику. Выход из игры — Ctrl+C.
+`npm install` — один раз, `npm start` — собрать и сыграть, `npm test` — проверить тексты и логику. Выход из игры — Ctrl+C, после выхода игра пишет «До встречи!».
 
 ![Партия в терминале](images/screenshot.png)
 
