@@ -1,6 +1,6 @@
 {
   "theme": "Зима",
-  "greeting": "Режимы: classic, quick",
+  "greeting": "Привет, Саня! Режимы: classic, quick",
   "modes": {
     "quick": {
       "min": 1,
