@@ -36,11 +36,11 @@ for (let tries = 1; ; ) {
     console.log(`Нужно целое число от ${mode.min} до ${mode.max}.`);
     continue;
   }
-  console.log(hint(mode, secret, guess));
   if (guess === secret) {
     console.log(game.attempts.replace("{count}", String(tries)));
     break;
   }
+  console.log(hint(mode, secret, guess));
   console.log(temperatureHint(game, secret, guess, previousGuess));
   previousGuess = guess;
   tries++;
