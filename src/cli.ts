@@ -38,7 +38,7 @@ for (let tries = 1; ; ) {
   }
   console.log(hint(mode, secret, guess));
   if (guess === secret) {
-    console.log(`Попыток: ${tries}.`);
+    console.log(game.attempts.replace("{count}", String(tries)));
     break;
   }
   console.log(temperatureHint(game, secret, guess, previousGuess));

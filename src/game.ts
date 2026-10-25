@@ -4,6 +4,7 @@ export type Mode = { min: number; max: number; higher: string; lower: string; wi
 export type Game = {
   theme: string;
   greeting: string;
+  attempts: string;
   warmer: string;
   colder: string;
   sameDistance: string;
@@ -25,7 +26,7 @@ export function parseGame(text: string): Game {
 export function checkGame(data: unknown): Game {
   const g = data as Game;
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-  for (const key of ["theme", "greeting", "warmer", "colder", "sameDistance", "firstGuess"] as const) {
+  for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
   }
   if (!g.modes || typeof g.modes !== "object" || Object.keys(g.modes).length === 0) {

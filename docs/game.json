@@ -1,6 +1,7 @@
 {
   "theme": "Зима",
   "greeting": "Привет, Саня! Режимы: classic, quick",
+  "attempts": "Попыток: {count}.",
   "warmer": "Теплее!",
   "colder": "Холоднее.",
   "sameDistance": "Расстояние не изменилось.",

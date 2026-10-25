@@ -45,7 +45,7 @@ $("play").onsubmit = (e) => {
     }
     tries++;
     if (guess === secret) {
-        $("answer").textContent = `${hint(mode, secret, guess)} Попыток: ${tries}. Выберите режим, чтобы сыграть ещё.`;
+        $("answer").textContent = `${hint(mode, secret, guess)} ${game.attempts.replace("{count}", String(tries))} Выберите режим, чтобы сыграть ещё.`;
         input.disabled = true;
         return;
     }
