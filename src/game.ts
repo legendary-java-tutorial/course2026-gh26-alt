@@ -1,7 +1,15 @@
 // Логика игры «Угадай число»: тексты и режимы — из docs/game.json, код их не хранит.
 
 export type Mode = { min: number; max: number; higher: string; lower: string; win: string };
-export type Game = { theme: string; greeting: string; modes: Record<string, Mode> };
+export type Game = {
+  theme: string;
+  greeting: string;
+  warmer: string;
+  colder: string;
+  sameDistance: string;
+  firstGuess: string;
+  modes: Record<string, Mode>;
+};
 
 // Текст docs/game.json → игра; ошибка — понятная, по-русски, с названием файла.
 export function parseGame(text: string): Game {
@@ -17,7 +25,7 @@ export function parseGame(text: string): Game {
 export function checkGame(data: unknown): Game {
   const g = data as Game;
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-  for (const key of ["theme", "greeting"] as const) {
+  for (const key of ["theme", "greeting", "warmer", "colder", "sameDistance", "firstGuess"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
   }
   if (!g.modes || typeof g.modes !== "object" || Object.keys(g.modes).length === 0) {
@@ -42,6 +50,16 @@ export function hint(mode: Mode, secret: number, guess: number): string {
   if (guess < secret) return mode.higher;
   if (guess > secret) return mode.lower;
   return mode.win;
+}
+
+// Подсказка о расстоянии до числа относительно предыдущей попытки.
+export function temperatureHint(game: Game, secret: number, guess: number, previousGuess?: number): string {
+  if (previousGuess === undefined) return game.firstGuess;
+  const distance = Math.abs(secret - guess);
+  const previousDistance = Math.abs(secret - previousGuess);
+  if (distance < previousDistance) return game.warmer;
+  if (distance > previousDistance) return game.colder;
+  return game.sameDistance;
 }
 
 // Загаданное число режима: целое от min до max включительно.

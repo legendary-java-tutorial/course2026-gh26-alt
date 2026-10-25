@@ -14,7 +14,7 @@ export function checkGame(data) {
     const g = data;
     if (!g || typeof g !== "object")
         throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-    for (const key of ["theme", "greeting"]) {
+    for (const key of ["theme", "greeting", "warmer", "colder", "sameDistance", "firstGuess"]) {
         if (typeof g[key] !== "string" || g[key].trim() === "")
             throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
     }
@@ -42,6 +42,18 @@ export function hint(mode, secret, guess) {
     if (guess > secret)
         return mode.lower;
     return mode.win;
+}
+// Подсказка о расстоянии до числа относительно предыдущей попытки.
+export function temperatureHint(game, secret, guess, previousGuess) {
+    if (previousGuess === undefined)
+        return game.firstGuess;
+    const distance = Math.abs(secret - guess);
+    const previousDistance = Math.abs(secret - previousGuess);
+    if (distance < previousDistance)
+        return game.warmer;
+    if (distance > previousDistance)
+        return game.colder;
+    return game.sameDistance;
 }
 // Загаданное число режима: целое от min до max включительно.
 export function secretFor(mode, random = Math.random) {

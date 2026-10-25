@@ -1,5 +1,5 @@
 // Игра в браузере: та же сборка в docs/ и тот же docs/game.json; страница — docs/index.html (GitHub Pages).
-import { parseGame, hint, parseGuess, secretFor } from "./game.js";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor } from "./game.js";
 const $ = (id) => document.getElementById(id);
 const input = $("guess");
 let game;
@@ -16,10 +16,12 @@ $("choose").hidden = false;
 let mode;
 let secret = 0;
 let tries = 0;
+let previousGuess;
 function start(name) {
     mode = game.modes[name];
     secret = secretFor(mode);
     tries = 0;
+    previousGuess = undefined;
     $("range").textContent = `Режим ${name}: число от ${mode.min} до ${mode.max}.`;
     $("answer").textContent = "";
     $("play").hidden = false;
@@ -47,6 +49,7 @@ $("play").onsubmit = (e) => {
         input.disabled = true;
         return;
     }
-    $("answer").textContent = hint(mode, secret, guess);
+    $("answer").textContent = `${hint(mode, secret, guess)} ${temperatureHint(game, secret, guess, previousGuess)}`;
+    previousGuess = guess;
     input.focus();
 };

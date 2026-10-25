@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
-import { parseGame, hint, parseGuess, secretFor } from "./game.js";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor } from "./game.js";
 let game;
 try {
     game = parseGame(readFileSync(new URL("./game.json", import.meta.url), "utf8"));
@@ -26,6 +26,7 @@ if (names.length > 1) {
 const mode = game.modes[name];
 const secret = secretFor(mode);
 console.log(`Режим ${name}: число от ${mode.min} до ${mode.max}.`);
+let previousGuess;
 for (let tries = 1;;) {
     const guess = parseGuess(await rl.question("Ваша догадка: "));
     if (guess === null) {
@@ -37,6 +38,8 @@ for (let tries = 1;;) {
         console.log(`Попыток: ${tries}.`);
         break;
     }
+    console.log(temperatureHint(game, secret, guess, previousGuess));
+    previousGuess = guess;
     tries++;
 }
 rl.removeAllListeners("close");
