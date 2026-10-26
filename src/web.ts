@@ -18,12 +18,14 @@ let mode: Mode;
 let secret = 0;
 let tries = 0;
 let previousGuess: number | undefined;
+let guesses = new Set<number>();
 
 function start(name: string) {
   mode = game.modes[name];
   secret = secretFor(mode);
   tries = 0;
   previousGuess = undefined;
+  guesses = new Set<number>();
   $("range").textContent = `Режим ${name}: число от ${mode.min} до ${mode.max}.`;
   $("answer").textContent = "";
   $("play").hidden = false;
@@ -53,7 +55,9 @@ $("play").onsubmit = (e) => {
     input.disabled = true;
     return;
   }
-  $("answer").textContent = `${hint(mode, secret, guess)} ${temperatureHint(game, secret, guess, previousGuess)}`;
+  const repeatedHint = guesses.has(guess) ? `${game.repeatedGuess} ` : "";
+  $("answer").textContent = `${repeatedHint}${hint(mode, secret, guess)} ${temperatureHint(game, secret, guess, previousGuess)}`;
+  guesses.add(guess);
   previousGuess = guess;
   input.focus();
 };

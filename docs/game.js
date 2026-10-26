@@ -14,7 +14,7 @@ export function checkGame(data) {
     const g = data;
     if (!g || typeof g !== "object")
         throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-    for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess"]) {
+    for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess"]) {
         if (typeof g[key] !== "string" || g[key].trim() === "")
             throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
     }

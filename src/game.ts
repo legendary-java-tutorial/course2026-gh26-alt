@@ -9,6 +9,7 @@ export type Game = {
   colder: string;
   sameDistance: string;
   firstGuess: string;
+  repeatedGuess: string;
   modes: Record<string, Mode>;
 };
 
@@ -26,7 +27,7 @@ export function parseGame(text: string): Game {
 export function checkGame(data: unknown): Game {
   const g = data as Game;
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-  for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess"] as const) {
+  for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
   }
   if (!g.modes || typeof g.modes !== "object" || Object.keys(g.modes).length === 0) {

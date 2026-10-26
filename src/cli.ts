@@ -30,6 +30,7 @@ const secret = secretFor(mode);
 console.log(`Режим ${name}: число от ${mode.min} до ${mode.max}.`);
 
 let previousGuess: number | undefined;
+const guesses = new Set<number>();
 for (let tries = 1; ; ) {
   const guess = parseGuess(await rl.question("Ваша догадка: "));
   if (guess === null || guess < mode.min || guess > mode.max) {
@@ -40,8 +41,10 @@ for (let tries = 1; ; ) {
     console.log(game.attempts.replace("{count}", String(tries)));
     break;
   }
+  if (guesses.has(guess)) console.log(game.repeatedGuess);
   console.log(hint(mode, secret, guess));
   console.log(temperatureHint(game, secret, guess, previousGuess));
+  guesses.add(guess);
   previousGuess = guess;
   tries++;
 }
