@@ -32,7 +32,7 @@ console.log(`Режим ${name}: число от ${mode.min} до ${mode.max}.`)
 let previousGuess: number | undefined;
 for (let tries = 1; ; ) {
   const guess = parseGuess(await rl.question("Ваша догадка: "));
-  if (guess === null || guess < mode.min || guess > mode.max) {
+  if (guess === null) {
     console.log(`Нужно целое число от ${mode.min} до ${mode.max}.`);
     continue;
   }

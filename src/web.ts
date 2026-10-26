@@ -43,7 +43,7 @@ $("play").onsubmit = (e) => {
   e.preventDefault();
   const guess = parseGuess(input.value);
   input.value = "";
-  if (guess === null || guess < mode.min || guess > mode.max) {
+  if (guess === null) {
     $("answer").textContent = `Нужно целое число от ${mode.min} до ${mode.max}.`;
     return;
   }

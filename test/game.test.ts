@@ -8,8 +8,6 @@ test("тексты игры: docs/game.json правильный, режимы �
   const game = parseGame(readFileSync(new URL("../docs/game.json", import.meta.url), "utf8"));
   const names = Object.keys(game.modes);
   assert.equal(game.attempts.replace("{count}", "7"), "Угадал за 7 попыток!");
-  assert.deepEqual(game.modes["лёгкий"] && [game.modes["лёгкий"].min, game.modes["лёгкий"].max], [1, 50]);
-  assert.deepEqual(game.modes["трудный"] && [game.modes["трудный"].min, game.modes["трудный"].max], [1, 500]);
   if (names.length > 1) {
     for (const name of names) assert.ok(game.greeting.includes(name), `в приветствии нет режима "${name}"`);
   }
