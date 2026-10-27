@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { parseGame, hint, temperatureHint, parseGuess, secretFor } from "../src/game.ts";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords } from "../src/game.ts";
 
 test("тексты игры: docs/game.json правильный, режимы названы в приветствии", () => {
   const game = parseGame(readFileSync(new URL("../docs/game.json", import.meta.url), "utf8"));
@@ -13,6 +13,9 @@ test("тексты игры: docs/game.json правильный, режимы �
   assert.equal(game.replayYes, "Да");
   assert.equal(game.replayNo, "Нет");
   assert.equal(game.replayEnd, "До встречи!");
+  assert.equal(game.recordsTitle.replace("{mode}", "quick"), "Топ-5 режима quick (попытки)");
+  assert.equal(game.recordsEmpty, "Пока рекордов нет.");
+  assert.equal(game.recordLine.replace("{position}", "1").replace("{attempts}", "3").replace("{date}", "сегодня"), "1. 3 — сегодня");
   assert.deepEqual(names, ["quick", "classic", "лёгкий", "трудный"]);
   assert.deepEqual([game.modes.quick.min, game.modes.quick.max], [1, 10]);
   assert.deepEqual([game.modes.classic.min, game.modes.classic.max], [1, 100]);
@@ -29,6 +32,33 @@ test("подсказка: теплее, холоднее и первая поп�
   assert.equal(temperatureHint(game, 5, 6, 8), game.warmer);
   assert.equal(temperatureHint(game, 5, 9, 8), game.colder);
   assert.equal(temperatureHint(game, 5, 2, 8), game.sameDistance);
+});
+
+test("рекорды: сортировка, топ-5 по режимам и равные результаты", () => {
+  const base = "2026-11-10T10:00:00.000Z";
+  let records = [1, 2, 3, 4, 5, 6].map((attempts) => ({
+    mode: "quick",
+    attempts,
+    date: new Date(Date.parse(base) + attempts * 1000).toISOString(),
+  }));
+  records = addRecord(records, "classic", 2, base);
+  assert.deepEqual(topRecords(records, "quick").map((record) => record.attempts), [1, 2, 3, 4, 5]);
+  assert.equal(topRecords(records, "classic").length, 1);
+  assert.equal(topRecords(records).filter((record) => record.mode === "quick").length, 5);
+  records = addRecord(records, "quick", 2, "2026-11-10T09:00:00.000Z");
+  assert.equal(topRecords(records, "quick")[1].date, "2026-11-10T09:00:00.000Z");
+  assert.equal(addRecord(records, "quick", 0, base).length, records.length);
+});
+
+test("рекорды: чтение повреждённых данных и отбрасывание некорректных записей", () => {
+  assert.deepEqual(parseRecords("не JSON"), []);
+  assert.deepEqual(parseRecords("{}"), []);
+  const records = parseRecords(JSON.stringify([
+    { mode: "quick", attempts: 2, date: "2026-11-10T10:00:00.000Z" },
+    { mode: "quick", attempts: 0, date: "2026-11-10T10:00:00.000Z" },
+    { mode: "classic", attempts: 1, date: "не дата" },
+  ]));
+  assert.deepEqual(records, [{ mode: "quick", attempts: 2, date: "2026-11-10T10:00:00.000Z" }]);
 });
 
 test("логика игры: ответы на догадку и загаданное число", () => {

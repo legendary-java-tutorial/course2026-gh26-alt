@@ -1,6 +1,7 @@
 // Логика игры «Угадай число»: тексты и режимы — из docs/game.json, код их не хранит.
 
 export type Mode = { min: number; max: number; higher: string; lower: string; win: string };
+export type GameRecord = { mode: string; attempts: number; date: string };
 export type Game = {
   theme: string;
   greeting: string;
@@ -14,6 +15,9 @@ export type Game = {
   replayYes: string;
   replayNo: string;
   replayEnd: string;
+  recordsTitle: string;
+  recordsEmpty: string;
+  recordLine: string;
   modes: Record<string, Mode>;
 };
 
@@ -31,7 +35,7 @@ export function parseGame(text: string): Game {
 export function checkGame(data: unknown): Game {
   const g = data as Game;
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-  for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd"] as const) {
+  for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
   }
   if (!g.modes || typeof g.modes !== "object" || Object.keys(g.modes).length === 0) {
@@ -49,6 +53,47 @@ export function checkGame(data: unknown): Game {
     }
   }
   return g;
+}
+
+function isGameRecord(item: unknown): item is GameRecord {
+  if (!item || typeof item !== "object") return false;
+  const record = item as Record<string, unknown>;
+  return typeof record.mode === "string" && record.mode !== "" &&
+    typeof record.attempts === "number" && Number.isInteger(record.attempts) && record.attempts > 0 &&
+    typeof record.date === "string" && Number.isFinite(Date.parse(record.date));
+}
+
+// Сохраняет корректные результаты и оставляет топ-5 для каждого режима.
+export function parseRecords(text: string): GameRecord[] {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(data)) return [];
+  const records = data.filter(isGameRecord);
+  return topRecords(records);
+}
+
+export function addRecord(records: GameRecord[], mode: string, attempts: number, date = new Date().toISOString()): GameRecord[] {
+  if (!mode || !Number.isInteger(attempts) || attempts < 1 || !Number.isFinite(Date.parse(date))) return topRecords(records);
+  return topRecords([...records, { mode, attempts, date }]);
+}
+
+export function topRecords(records: GameRecord[], mode?: string): GameRecord[] {
+  const sorted = records
+    .filter((record) => !mode || record.mode === mode)
+    .slice()
+    .sort((a, b) => a.attempts - b.attempts || Date.parse(a.date) - Date.parse(b.date) || a.mode.localeCompare(b.mode));
+  if (mode) return sorted.slice(0, 5);
+  const counts = new Map<string, number>();
+  return sorted.filter((record) => {
+    const count = counts.get(record.mode) ?? 0;
+    if (count >= 5) return false;
+    counts.set(record.mode, count + 1);
+    return true;
+  });
 }
 
 // Ответ на догадку: больше, меньше или угадал.

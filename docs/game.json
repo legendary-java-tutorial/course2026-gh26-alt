@@ -11,6 +11,9 @@
   "replayYes": "Да",
   "replayNo": "Нет",
   "replayEnd": "До встречи!",
+  "recordsTitle": "Топ-5 режима {mode} (попытки)",
+  "recordsEmpty": "Пока рекордов нет.",
+  "recordLine": "{position}. {attempts} — {date}",
   "modes": {
     "quick": {
       "min": 1,

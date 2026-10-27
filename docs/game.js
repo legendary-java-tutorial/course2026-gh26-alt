@@ -14,7 +14,7 @@ export function checkGame(data) {
     const g = data;
     if (!g || typeof g !== "object")
         throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-    for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd"]) {
+    for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"]) {
         if (typeof g[key] !== "string" || g[key].trim() === "")
             throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
     }
@@ -34,6 +34,49 @@ export function checkGame(data) {
         }
     }
     return g;
+}
+function isGameRecord(item) {
+    if (!item || typeof item !== "object")
+        return false;
+    const record = item;
+    return typeof record.mode === "string" && record.mode !== "" &&
+        typeof record.attempts === "number" && Number.isInteger(record.attempts) && record.attempts > 0 &&
+        typeof record.date === "string" && Number.isFinite(Date.parse(record.date));
+}
+// Сохраняет корректные результаты и оставляет топ-5 для каждого режима.
+export function parseRecords(text) {
+    let data;
+    try {
+        data = JSON.parse(text);
+    }
+    catch {
+        return [];
+    }
+    if (!Array.isArray(data))
+        return [];
+    const records = data.filter(isGameRecord);
+    return topRecords(records);
+}
+export function addRecord(records, mode, attempts, date = new Date().toISOString()) {
+    if (!mode || !Number.isInteger(attempts) || attempts < 1 || !Number.isFinite(Date.parse(date)))
+        return topRecords(records);
+    return topRecords([...records, { mode, attempts, date }]);
+}
+export function topRecords(records, mode) {
+    const sorted = records
+        .filter((record) => !mode || record.mode === mode)
+        .slice()
+        .sort((a, b) => a.attempts - b.attempts || Date.parse(a.date) - Date.parse(b.date) || a.mode.localeCompare(b.mode));
+    if (mode)
+        return sorted.slice(0, 5);
+    const counts = new Map();
+    return sorted.filter((record) => {
+        const count = counts.get(record.mode) ?? 0;
+        if (count >= 5)
+            return false;
+        counts.set(record.mode, count + 1);
+        return true;
+    });
 }
 // Ответ на догадку: больше, меньше или угадал.
 export function hint(mode, secret, guess) {

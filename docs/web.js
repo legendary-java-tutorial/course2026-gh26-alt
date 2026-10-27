@@ -1,5 +1,5 @@
 // Игра в браузере: та же сборка в docs/ и тот же docs/game.json; страница — docs/index.html (GitHub Pages).
-import { parseGame, hint, temperatureHint, parseGuess, secretFor } from "./game.js";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords } from "./game.js";
 const $ = (id) => document.getElementById(id);
 const input = $("guess");
 let game;
@@ -19,6 +19,45 @@ let secret = 0;
 let tries = 0;
 let previousGuess;
 let guesses = new Set();
+const recordsKey = "guess-number-records";
+function loadRecords() {
+    try {
+        return parseRecords(localStorage.getItem(recordsKey) ?? "[]");
+    }
+    catch {
+        return [];
+    }
+}
+let records = loadRecords();
+function saveRecords() {
+    try {
+        localStorage.setItem(recordsKey, JSON.stringify(records));
+    }
+    catch {
+        // Игра продолжается и без доступного хранилища браузера.
+    }
+}
+function renderRecords() {
+    $("records").hidden = false;
+    $("records-title").textContent = game.recordsTitle.replace("{mode}", modeName);
+    const list = $("records-list");
+    list.replaceChildren();
+    const best = topRecords(records, modeName);
+    if (best.length === 0) {
+        const item = document.createElement("li");
+        item.textContent = game.recordsEmpty;
+        list.append(item);
+        return;
+    }
+    best.forEach((record, index) => {
+        const item = document.createElement("li");
+        item.textContent = game.recordLine
+            .replace("{position}", String(index + 1))
+            .replace("{attempts}", String(record.attempts))
+            .replace("{date}", new Date(record.date).toLocaleString("ru-RU"));
+        list.append(item);
+    });
+}
 function start(name) {
     modeName = name;
     mode = game.modes[name];
@@ -33,6 +72,7 @@ function start(name) {
     input.disabled = false;
     input.value = "";
     input.focus();
+    renderRecords();
 }
 $("replay-prompt").textContent = game.replayPrompt;
 $("replay-yes").textContent = game.replayYes;
@@ -59,6 +99,9 @@ $("play").onsubmit = (e) => {
     tries++;
     if (guess === secret) {
         $("answer").textContent = game.attempts.replace("{count}", String(tries));
+        records = addRecord(records, modeName, tries);
+        saveRecords();
+        renderRecords();
         input.disabled = true;
         $("replay").hidden = false;
         return;
