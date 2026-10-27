@@ -50,11 +50,23 @@ rl.on("close", () => {
 });
 
 const names = Object.keys(game.modes);
-console.log(`${game.greeting} (тема: ${game.theme})`);
+const menuLines = names.map((modeName, index) => {
+  const { min, max } = game.modes[modeName];
+  return `${index + 1}. ${modeName} — ${min}–${max}`;
+});
+const contentWidth = Math.max(...[game.greeting, `Тема: ${game.theme}`, ...menuLines].map((line) => [...line].length));
+const border = `+${"-".repeat(contentWidth + 2)}+`;
+console.log(border);
+console.log(`| ${game.greeting.padEnd(contentWidth)} |`);
+console.log(`| ${`Тема: ${game.theme}`.padEnd(contentWidth)} |`);
+console.log(`|${"-".repeat(contentWidth + 2)}|`);
+for (const line of menuLines) console.log(`| ${line.padEnd(contentWidth)} |`);
+console.log(border);
 let name = names[0];
 if (names.length > 1) {
-  const answer = (await rl.question(`Какой режим (${names.join(" / ")})? `)).trim();
-  name = names.includes(answer) ? answer : names[0];
+  const answer = (await rl.question("Выберите режим (номер или название): ")).trim();
+  const selectedIndex = Number(answer) - 1;
+  name = names.includes(answer) ? answer : names[selectedIndex] ?? names[0];
 }
 const mode = game.modes[name];
 console.log(`Режим ${name}: число от ${mode.min} до ${mode.max}.`);
