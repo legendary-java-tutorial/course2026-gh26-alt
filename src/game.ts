@@ -18,6 +18,19 @@ export type Game = {
   recordsTitle: string;
   recordsEmpty: string;
   recordLine: string;
+  cli: {
+    title: string;
+    themeLine: string;
+    modePrompt: string;
+    modeLine: string;
+    guessPrompt: string;
+    invalidGuess: string;
+    hintLine: string;
+    temperatureLine: string;
+    replayLine: string;
+    saveError: string;
+    exitMessage: string;
+  };
   modes: Record<string, Mode>;
 };
 
@@ -37,6 +50,10 @@ export function checkGame(data: unknown): Game {
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
   for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
+  }
+  if (!g.cli || typeof g.cli !== "object") throw new Error('docs/game.json: нет настроек интерфейса в "cli"');
+  for (const [key, value] of Object.entries(g.cli)) {
+    if (typeof value !== "string" || value.trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "cli.${key}"`);
   }
   if (!g.modes || typeof g.modes !== "object" || Object.keys(g.modes).length === 0) {
     throw new Error('docs/game.json: нет ни одного режима в "modes"');

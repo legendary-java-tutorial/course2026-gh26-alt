@@ -14,6 +14,19 @@
   "recordsTitle": "Топ-5 режима {mode} (попытки)",
   "recordsEmpty": "Пока рекордов нет.",
   "recordLine": "{position}. {attempts} — {date}",
+  "cli": {
+    "title": "╔══════════════════════════════╗\n║        УГАДАЙ ЧИСЛО         ║\n╚══════════════════════════════╝",
+    "themeLine": "Тема: {theme}",
+    "modePrompt": "Выбери режим ({modes}): ",
+    "modeLine": "РЕЖИМ {mode}  •  число от {min} до {max}",
+    "guessPrompt": "ТВОЯ ДОГАДКА → ",
+    "invalidGuess": "Введи целое число от {min} до {max}.",
+    "hintLine": "\n  ➜  {hint}\n",
+    "temperatureLine": "  ◦  {hint}\n",
+    "replayLine": "{prompt} ({yes}/{no}) ",
+    "saveError": "Не удалось сохранить файл docs/records.json.",
+    "exitMessage": "До встречи!"
+  },
   "modes": {
     "quick": {
       "min": 1,
