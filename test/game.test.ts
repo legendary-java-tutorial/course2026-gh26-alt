@@ -9,6 +9,10 @@ test("тексты игры: docs/game.json правильный, режимы �
   const names = Object.keys(game.modes);
   assert.equal(game.attempts.replace("{count}", "7"), "Угадал за 7 попыток!");
   assert.equal(game.repeatedGuess, "Это число ты уже вводил.");
+  assert.equal(game.replayPrompt, "Сыграть ещё?");
+  assert.equal(game.replayYes, "Да");
+  assert.equal(game.replayNo, "Нет");
+  assert.equal(game.replayEnd, "До встречи!");
   assert.deepEqual(names, ["quick", "classic", "лёгкий", "трудный"]);
   assert.deepEqual([game.modes.quick.min, game.modes.quick.max], [1, 10]);
   assert.deepEqual([game.modes.classic.min, game.modes.classic.max], [1, 100]);
