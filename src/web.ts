@@ -18,7 +18,6 @@ let mode: Mode;
 let modeName = "";
 let secret = 0;
 let tries = 0;
-let previousGuess: number | undefined;
 let guesses = new Set<number>();
 const recordsKey = "guess-number-records";
 
@@ -67,7 +66,6 @@ function start(name: string) {
   mode = game.modes[name];
   secret = secretFor(mode);
   tries = 0;
-  previousGuess = undefined;
   guesses = new Set<number>();
   $("range").textContent = `Режим ${name}: число от ${mode.min} до ${mode.max}.`;
   $("answer").textContent = "";
@@ -114,8 +112,7 @@ $("play").onsubmit = (e) => {
     return;
   }
   const repeatedHint = guesses.has(guess) ? `${game.repeatedGuess} ` : "";
-  $("answer").textContent = `${repeatedHint}${hint(mode, secret, guess)} ${temperatureHint(game, secret, guess, previousGuess)}`;
+  $("answer").textContent = `${repeatedHint}${hint(mode, secret, guess)} ${temperatureHint(game, mode, secret, guess)}`;
   guesses.add(guess);
-  previousGuess = guess;
   input.focus();
 };

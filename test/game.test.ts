@@ -26,12 +26,13 @@ test("тексты игры: docs/game.json правильный, режимы �
   }
 });
 
-test("подсказка: теплее, холоднее и первая попытка", () => {
+test("подсказка: степень близости к загаданному числу", () => {
   const game = parseGame(readFileSync(new URL("../docs/game.json", import.meta.url), "utf8"));
-  assert.equal(temperatureHint(game, 5, 8), game.firstGuess);
-  assert.equal(temperatureHint(game, 5, 6, 8), game.warmer);
-  assert.equal(temperatureHint(game, 5, 9, 8), game.colder);
-  assert.equal(temperatureHint(game, 5, 2, 8), game.sameDistance);
+  const mode = game.modes["трудный"];
+  assert.equal(temperatureHint(game, mode, 1, 75), game.hot);
+  assert.equal(temperatureHint(game, mode, 1, 76), game.warm);
+  assert.equal(temperatureHint(game, mode, 1, 151), game.cool);
+  assert.equal(temperatureHint(game, mode, 1, 302), game.freezing);
 });
 
 test("рекорды: сортировка, топ-5 по режимам и равные результаты", () => {

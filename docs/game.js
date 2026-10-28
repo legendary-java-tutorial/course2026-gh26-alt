@@ -14,7 +14,7 @@ export function checkGame(data) {
     const g = data;
     if (!g || typeof g !== "object")
         throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-    for (const key of ["theme", "greeting", "attempts", "warmer", "colder", "sameDistance", "firstGuess", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"]) {
+    for (const key of ["theme", "greeting", "attempts", "hot", "warm", "cool", "freezing", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"]) {
         if (typeof g[key] !== "string" || g[key].trim() === "")
             throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
     }
@@ -92,17 +92,17 @@ export function hint(mode, secret, guess) {
         return mode.lower;
     return mode.win;
 }
-// Подсказка о расстоянии до числа относительно предыдущей попытки.
-export function temperatureHint(game, secret, guess, previousGuess) {
-    if (previousGuess === undefined)
-        return game.firstGuess;
+// Оценка близости догадки к загаданному числу относительно диапазона режима.
+export function temperatureHint(game, mode, secret, guess) {
     const distance = Math.abs(secret - guess);
-    const previousDistance = Math.abs(secret - previousGuess);
-    if (distance < previousDistance)
-        return game.warmer;
-    if (distance > previousDistance)
-        return game.colder;
-    return game.sameDistance;
+    const range = mode.max - mode.min;
+    if (distance <= range * 0.15)
+        return game.hot;
+    if (distance <= range * 0.3)
+        return game.warm;
+    if (distance <= range * 0.6)
+        return game.cool;
+    return game.freezing;
 }
 // Загаданное число режима: целое от min до max включительно.
 export function secretFor(mode, random = Math.random) {

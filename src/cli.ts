@@ -78,7 +78,6 @@ printRecords(name);
 let replay = true;
 while (replay) {
   const secret = secretFor(mode);
-  let previousGuess: number | undefined;
   const guesses = new Set<number>();
   for (let tries = 1; ; ) {
     const guess = parseGuess(await rl.question(game.cli.guessPrompt));
@@ -95,9 +94,8 @@ while (replay) {
     }
     if (guesses.has(guess)) console.log(game.repeatedGuess);
     console.log(fill(game.cli.hintLine, { hint: hint(mode, secret, guess) }));
-    console.log(fill(game.cli.temperatureLine, { hint: temperatureHint(game, secret, guess, previousGuess) }));
+    console.log(fill(game.cli.temperatureLine, { hint: temperatureHint(game, mode, secret, guess) }));
     guesses.add(guess);
-    previousGuess = guess;
     tries++;
   }
   replay = (await rl.question(fill(game.cli.replayLine, { prompt: game.replayPrompt, yes: game.replayYes, no: game.replayNo }))).trim().toLocaleLowerCase() === game.replayYes.toLocaleLowerCase();
