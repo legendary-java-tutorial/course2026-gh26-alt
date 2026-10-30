@@ -25,7 +25,7 @@ npm test
 
 ## Как играть в браузере
 
-Откройте [legendary-java-tutorial.github.io/course2026-gh26-guess-number](https://legendary-java-tutorial.github.io/course2026-gh26-guess-number/), выберите режим кнопкой, вводите число и жмите «Проверить».
+Откройте [legendary-java-tutorial.github.io/course2026-gh26-alt](https://legendary-java-tutorial.github.io/course2026-gh26-alt/), выберите режим кнопкой, вводите число и жмите «Проверить».
 
 ![Партия в терминале](images/screenshot.png)
 
