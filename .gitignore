@@ -1,8 +1,9 @@
 # Пакеты: ставит npm install, в историю не идут
 node_modules/
 
-# Локальные рекорды игры
+# Локальные рекорды и статистика игры
 /docs/records.json
+/docs/stats.json
 
 # Журнал Claude Code учебного профиля — не в историю
 .javarush/
