@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
-import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords } from "./game.js";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords, parseStats, addStats } from "./game.js";
 let game;
 try {
     game = parseGame(readFileSync(new URL("./game.json", import.meta.url), "utf8"));
@@ -12,6 +12,14 @@ catch (e) {
     process.exit(1);
 }
 const recordsFile = new URL("./records.json", import.meta.url);
+const statsFile = new URL("./stats.json", import.meta.url);
+let stats;
+try {
+    stats = parseStats(readFileSync(statsFile, "utf8"));
+}
+catch {
+    stats = { games: 0, totalAttempts: 0, bestAttempts: null };
+}
 let records;
 try {
     records = parseRecords(readFileSync(recordsFile, "utf8"));
@@ -25,6 +33,14 @@ function saveRecords() {
     }
     catch {
         console.error(game.cli.saveError);
+    }
+}
+function saveStats() {
+    try {
+        writeFileSync(statsFile, `${JSON.stringify(stats, null, 2)}\n`, "utf8");
+    }
+    catch {
+        console.error(game.cli.statsSaveError);
     }
 }
 function printRecords(modeName) {
@@ -48,6 +64,14 @@ rl.on("close", () => {
 });
 const names = Object.keys(game.modes);
 const fill = (template, values) => template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
+function printStats() {
+    const average = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 }).format(stats.totalAttempts / stats.games);
+    console.log(fill(game.statsLine, {
+        games: stats.games,
+        average,
+        best: stats.bestAttempts ?? 0,
+    }));
+}
 const themeLine = fill(game.cli.themeLine, { theme: game.theme });
 const menuLines = names.map((modeName, index) => {
     const { min, max } = game.modes[modeName];
@@ -85,6 +109,9 @@ while (replay) {
             console.log(game.attempts.replace("{count}", String(tries)));
             records = addRecord(records, name, tries);
             saveRecords();
+            stats = addStats(stats, tries);
+            saveStats();
+            printStats();
             printRecords(name);
             break;
         }

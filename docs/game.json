@@ -14,6 +14,7 @@
   "recordsTitle": "Топ-5 режима {mode} (попытки)",
   "recordsEmpty": "Пока рекордов нет.",
   "recordLine": "{position}. {attempts} — {date}",
+  "statsLine": "Партий: {games}, в среднем {average} попыток, лучшая — {best}",
   "cli": {
     "title": "╔══════════════════════════════╗\n║        УГАДАЙ ЧИСЛО         ║\n╚══════════════════════════════╝",
     "themeLine": "Тема: {theme}",
@@ -25,6 +26,7 @@
     "temperatureLine": "  ◦  {hint}\n",
     "replayLine": "{prompt} ({yes}/{no}) ",
     "saveError": "Не удалось сохранить файл docs/records.json.",
+    "statsSaveError": "Не удалось сохранить файл docs/stats.json.",
     "exitMessage": "До встречи!"
   },
   "modes": {
