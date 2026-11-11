@@ -14,7 +14,7 @@ export function checkGame(data) {
     const g = data;
     if (!g || typeof g !== "object")
         throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-    for (const key of ["theme", "greeting", "attempts", "hot", "warm", "cool", "freezing", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"]) {
+    for (const key of ["theme", "greeting", "attempts", "hot", "warm", "cool", "freezing", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine", "statsLine"]) {
         if (typeof g[key] !== "string" || g[key].trim() === "")
             throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
     }
@@ -83,6 +83,37 @@ export function topRecords(records, mode) {
         counts.set(record.mode, count + 1);
         return true;
     });
+}
+export function parseStats(text) {
+    let data;
+    try {
+        data = JSON.parse(text);
+    }
+    catch {
+        return { games: 0, totalAttempts: 0, bestAttempts: null };
+    }
+    if (!data || typeof data !== "object")
+        return { games: 0, totalAttempts: 0, bestAttempts: null };
+    const stats = data;
+    if (!Number.isInteger(stats.games) || stats.games < 0 ||
+        !Number.isInteger(stats.totalAttempts) || stats.totalAttempts < 0 ||
+        !(stats.bestAttempts === null || (Number.isInteger(stats.bestAttempts) && stats.bestAttempts > 0))) {
+        return { games: 0, totalAttempts: 0, bestAttempts: null };
+    }
+    if (stats.games === 0 ? stats.totalAttempts !== 0 || stats.bestAttempts !== null :
+        stats.totalAttempts < stats.games || stats.bestAttempts === null) {
+        return { games: 0, totalAttempts: 0, bestAttempts: null };
+    }
+    return { games: stats.games, totalAttempts: stats.totalAttempts, bestAttempts: stats.bestAttempts };
+}
+export function addStats(stats, attempts) {
+    if (!Number.isInteger(attempts) || attempts < 1)
+        return stats;
+    return {
+        games: stats.games + 1,
+        totalAttempts: stats.totalAttempts + attempts,
+        bestAttempts: stats.bestAttempts === null ? attempts : Math.min(stats.bestAttempts, attempts),
+    };
 }
 // Ответ на догадку: больше, меньше или угадал.
 export function hint(mode, secret, guess) {
