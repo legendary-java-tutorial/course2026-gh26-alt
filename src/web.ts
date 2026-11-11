@@ -15,12 +15,14 @@ $("theme").textContent = `тема: ${game.theme}`;
 $("choose").hidden = false;
 
 let mode: Mode;
+let modeName = "";
 let secret = 0;
 let tries = 0;
 let previousGuess: number | undefined;
 let guesses = new Set<number>();
 
 function start(name: string) {
+  modeName = name;
   mode = game.modes[name];
   secret = secretFor(mode);
   tries = 0;
@@ -28,11 +30,21 @@ function start(name: string) {
   guesses = new Set<number>();
   $("range").textContent = `Режим ${name}: число от ${mode.min} до ${mode.max}.`;
   $("answer").textContent = "";
+  $("replay").hidden = true;
   $("play").hidden = false;
   input.disabled = false;
   input.value = "";
   input.focus();
 }
+
+$("replay-prompt").textContent = game.replayPrompt;
+$("replay-yes").textContent = game.replayYes;
+$("replay-no").textContent = game.replayNo;
+$("replay-yes").onclick = () => start(modeName);
+$("replay-no").onclick = () => {
+  $("answer").textContent += ` ${game.replayEnd}`;
+  $("replay").hidden = true;
+};
 
 for (const name of Object.keys(game.modes)) {
   const b = document.createElement("button");
@@ -51,8 +63,9 @@ $("play").onsubmit = (e) => {
   }
   tries++;
   if (guess === secret) {
-    $("answer").textContent = `${game.attempts.replace("{count}", String(tries))} Выберите режим, чтобы сыграть ещё.`;
+    $("answer").textContent = game.attempts.replace("{count}", String(tries));
     input.disabled = true;
+    $("replay").hidden = false;
     return;
   }
   const repeatedHint = guesses.has(guess) ? `${game.repeatedGuess} ` : "";

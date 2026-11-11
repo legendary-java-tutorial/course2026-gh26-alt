@@ -24,27 +24,32 @@ if (names.length > 1) {
     name = names.includes(answer) ? answer : names[0];
 }
 const mode = game.modes[name];
-const secret = secretFor(mode);
 console.log(`Режим ${name}: число от ${mode.min} до ${mode.max}.`);
-let previousGuess;
-const guesses = new Set();
-for (let tries = 1;;) {
-    const guess = parseGuess(await rl.question("Ваша догадка: "));
-    if (guess === null || guess < mode.min || guess > mode.max) {
-        console.log(`Нужно целое число от ${mode.min} до ${mode.max}.`);
-        continue;
+let replay = true;
+while (replay) {
+    const secret = secretFor(mode);
+    let previousGuess;
+    const guesses = new Set();
+    for (let tries = 1;;) {
+        const guess = parseGuess(await rl.question("Ваша догадка: "));
+        if (guess === null || guess < mode.min || guess > mode.max) {
+            console.log(`Нужно целое число от ${mode.min} до ${mode.max}.`);
+            continue;
+        }
+        if (guess === secret) {
+            console.log(game.attempts.replace("{count}", String(tries)));
+            break;
+        }
+        if (guesses.has(guess))
+            console.log(game.repeatedGuess);
+        console.log(hint(mode, secret, guess));
+        console.log(temperatureHint(game, secret, guess, previousGuess));
+        guesses.add(guess);
+        previousGuess = guess;
+        tries++;
     }
-    if (guess === secret) {
-        console.log(game.attempts.replace("{count}", String(tries)));
-        break;
-    }
-    if (guesses.has(guess))
-        console.log(game.repeatedGuess);
-    console.log(hint(mode, secret, guess));
-    console.log(temperatureHint(game, secret, guess, previousGuess));
-    guesses.add(guess);
-    previousGuess = guess;
-    tries++;
+    replay = (await rl.question(`${game.replayPrompt} (${game.replayYes}/${game.replayNo}) `)).trim().toLocaleLowerCase() === game.replayYes.toLocaleLowerCase();
 }
+console.log(game.replayEnd);
 rl.removeAllListeners("close");
 rl.close();
