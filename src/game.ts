@@ -2,6 +2,7 @@
 
 export type Mode = { min: number; max: number; higher: string; lower: string; win: string };
 export type GameRecord = { mode: string; attempts: number; date: string };
+export type GameStats = { games: number; totalAttempts: number; bestAttempts: number | null };
 export type Game = {
   theme: string;
   greeting: string;
@@ -18,6 +19,7 @@ export type Game = {
   recordsTitle: string;
   recordsEmpty: string;
   recordLine: string;
+  statsLine: string;
   cli: {
     title: string;
     themeLine: string;
@@ -29,6 +31,7 @@ export type Game = {
     temperatureLine: string;
     replayLine: string;
     saveError: string;
+    statsSaveError: string;
     exitMessage: string;
   };
   modes: Record<string, Mode>;
@@ -48,7 +51,7 @@ export function parseGame(text: string): Game {
 export function checkGame(data: unknown): Game {
   const g = data as Game;
   if (!g || typeof g !== "object") throw new Error("docs/game.json: ожидается объект в фигурных скобках");
-  for (const key of ["theme", "greeting", "attempts", "hot", "warm", "cool", "freezing", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine"] as const) {
+  for (const key of ["theme", "greeting", "attempts", "hot", "warm", "cool", "freezing", "repeatedGuess", "replayPrompt", "replayYes", "replayNo", "replayEnd", "recordsTitle", "recordsEmpty", "recordLine", "statsLine"] as const) {
     if (typeof g[key] !== "string" || g[key].trim() === "") throw new Error(`docs/game.json: пустое или пропущенное поле "${key}"`);
   }
   if (!g.cli || typeof g.cli !== "object") throw new Error('docs/game.json: нет настроек интерфейса в "cli"');
@@ -111,6 +114,36 @@ export function topRecords(records: GameRecord[], mode?: string): GameRecord[] {
     counts.set(record.mode, count + 1);
     return true;
   });
+}
+
+export function parseStats(text: string): GameStats {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return { games: 0, totalAttempts: 0, bestAttempts: null };
+  }
+  if (!data || typeof data !== "object") return { games: 0, totalAttempts: 0, bestAttempts: null };
+  const stats = data as Record<string, unknown>;
+  if (!Number.isInteger(stats.games) || (stats.games as number) < 0 ||
+      !Number.isInteger(stats.totalAttempts) || (stats.totalAttempts as number) < 0 ||
+      !(stats.bestAttempts === null || (Number.isInteger(stats.bestAttempts) && (stats.bestAttempts as number) > 0))) {
+    return { games: 0, totalAttempts: 0, bestAttempts: null };
+  }
+  if (stats.games === 0 ? stats.totalAttempts !== 0 || stats.bestAttempts !== null :
+      (stats.totalAttempts as number) < (stats.games as number) || stats.bestAttempts === null) {
+    return { games: 0, totalAttempts: 0, bestAttempts: null };
+  }
+  return { games: stats.games as number, totalAttempts: stats.totalAttempts as number, bestAttempts: stats.bestAttempts as number | null };
+}
+
+export function addStats(stats: GameStats, attempts: number): GameStats {
+  if (!Number.isInteger(attempts) || attempts < 1) return stats;
+  return {
+    games: stats.games + 1,
+    totalAttempts: stats.totalAttempts + attempts,
+    bestAttempts: stats.bestAttempts === null ? attempts : Math.min(stats.bestAttempts, attempts),
+  };
 }
 
 // Ответ на догадку: больше, меньше или угадал.

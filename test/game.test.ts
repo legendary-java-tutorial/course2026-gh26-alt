@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords } from "../src/game.ts";
+import { parseGame, hint, temperatureHint, parseGuess, secretFor, addRecord, parseRecords, topRecords, parseStats, addStats } from "../src/game.ts";
 
 test("тексты игры: docs/game.json правильный, режимы названы в приветствии", () => {
   const game = parseGame(readFileSync(new URL("../docs/game.json", import.meta.url), "utf8"));
@@ -60,6 +60,22 @@ test("рекорды: чтение повреждённых данных и от
     { mode: "classic", attempts: 1, date: "не дата" },
   ]));
   assert.deepEqual(records, [{ mode: "quick", attempts: 2, date: "2026-11-10T10:00:00.000Z" }]);
+});
+
+test("статистика: накопление партий, средних попыток и лучшего результата", () => {
+  let stats = parseStats('{"games":0,"totalAttempts":0,"bestAttempts":null}');
+  stats = addStats(stats, 4);
+  stats = addStats(stats, 8);
+  assert.deepEqual(stats, { games: 2, totalAttempts: 12, bestAttempts: 4 });
+  assert.deepEqual(parseStats(JSON.stringify(stats)), stats);
+  assert.deepEqual(addStats(stats, 0), stats);
+});
+
+test("статистика: повреждённые и некорректные данные сбрасываются", () => {
+  const empty = { games: 0, totalAttempts: 0, bestAttempts: null };
+  assert.deepEqual(parseStats("не JSON"), empty);
+  assert.deepEqual(parseStats("{}"), empty);
+  assert.deepEqual(parseStats('{"games":1,"totalAttempts":0,"bestAttempts":2}'), empty);
 });
 
 test("логика игры: ответы на догадку и загаданное число", () => {
